@@ -1,0 +1,104 @@
+{
+  "system": {
+    "name": "STGC Solar Tracking System",
+    "version": "1.0.0",
+    "debug": false
+  },
+  "gps": {
+    "enabled": true,
+    "port": "/dev/ttyAMA0",
+    "baudrate": 9600,
+    "timeout": 1
+  },
+  "motors": {
+    "x_axis": {
+      "pin": 18,
+      "min_angle": 0,
+      "max_angle": 180,
+      "initial_angle": 90,
+      "pwm_frequency": 50
+    },
+    "y_axis": {
+      "pin": 13,
+      "min_angle": 0,
+      "max_angle": 180,
+      "initial_angle": 90,
+      "pwm_frequency": 50
+    },
+    "smooth_move": true,
+    "move_steps": 20,
+    "move_delay": 0.05
+  },
+  "sensors": {
+    "ina219": {
+      "enabled": true,
+      "i2c_address": "0x40",
+      "bus_voltage_range": 1,
+      "gain": 3,
+      "sample_interval": 1
+    },
+    "dht11": {
+      "enabled": true,
+      "pin": 4,
+      "sample_interval": 10
+    },
+    "photodiode": {
+      "enabled": true,
+      "adc_type": "MCP3008",
+      "channels": {
+        "top": 0,
+        "bottom": 1,
+        "left": 2,
+        "right": 3
+      },
+      "threshold": 50,
+      "sample_interval": 5
+    },
+    "rtc": {
+      "enabled": true,
+      "i2c_address": "0x68"
+    }
+  },
+  "tracking": {
+    "mode": "auto",
+    "update_interval": 60,
+    "correction_threshold": 5,
+    "use_gps": true,
+    "use_photodiode": true,
+    "sleep_mode": {
+      "enabled": true,
+      "start_time": "19:00",
+      "end_time": "06:00",
+      "return_to_east": true
+    }
+  },
+  "safety": {
+    "voltage_max": 6.5,
+    "current_max": 2.0,
+    "temperature_max": 80,
+    "relay_pin": 25,
+    "auto_shutdown": true
+  },
+  "logging": {
+    "enabled": true,
+    "log_dir": "../logs",
+    "power_log": "power_log.csv",
+    "position_log": "position_log.csv",
+    "app_log": "app.log",
+    "log_level": "INFO",
+    "log_interval": 60
+  },
+  "mcp_server": {
+    "enabled": true,
+    "host": "0.0.0.0",
+    "port": 5000,
+    "debug": false,
+    "cors_enabled": true
+  },
+  "location": {
+    "latitude": 35.1379,
+    "longitude": 129.0756,
+    "timezone": "Asia/Seoul",
+    "elevation": 10
+  }
+}

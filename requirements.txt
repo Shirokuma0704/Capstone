@@ -1,0 +1,44 @@
+# STGC Solar Tracking System - Python Dependencies
+
+# GPIO and Hardware Control
+RPi.GPIO>=0.7.1
+lgpio>=0.2.0.0  # For Raspberry Pi 5
+
+# Sensor Libraries
+adafruit-circuitpython-ina219>=3.4.0
+adafruit-circuitpython-dht>=4.0.0
+smbus2>=0.4.2
+
+# GPS
+gpsd-py3>=0.3.0
+pyserial>=3.5
+
+# SPI and I2C
+spidev>=3.6
+
+# Web Server (MCP)
+Flask>=2.3.0
+Flask-CORS>=4.0.0
+
+# Data Processing
+numpy>=1.24.0
+pandas>=2.0.0
+
+# Utilities
+python-dateutil>=2.8.2
+pytz>=2023.3
+
+# Configuration
+pyyaml>=6.0
+
+# Logging
+colorlog>=6.7.0
+
+# System Monitoring
+psutil>=5.9.0
+
+# Optional: Development Tools
+# pytest>=7.4.0
+# black>=23.0.0
+# flake8>=6.0.0
+# pylint>=2.17.0
