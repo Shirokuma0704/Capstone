@@ -31,11 +31,14 @@ env/
 ENV/
 env.bak/
 venv.bak/
+.venv/
+PythonProject/.venv
 
 # PyCharm
 .idea/
 *.iml
 *.iws
+PythonProject/.idea
 
 # VS Code
 .vscode/
@@ -137,3 +140,6 @@ secrets.json
 
 # MCP Server
 server.pid
+
+# personal
+personal
