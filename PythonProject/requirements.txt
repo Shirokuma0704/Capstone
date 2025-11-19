@@ -1,0 +1,12 @@
+flask
+influxdb-client
+google-generativeai
+python-dotenv
+requests
+adafruit-blinka
+adafruit-circuitpython-ina219
+adafruit-circuitpython-dht
+adafruit-extended-bus
+pyserial
+smbus2
+pysolar

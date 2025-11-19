@@ -1,0 +1,321 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_INFLUXDB",
+      "label": "InfluxDB",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "influxdb",
+      "pluginName": "InfluxDB"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "9.2.0"
+    },
+    {
+      "type": "datasource",
+      "id": "influxdb",
+      "name": "InfluxDB",
+      "version": "1.0.0"
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "id": 1,
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 0 },
+      "type": "gauge",
+      "title": "현재 발전량",
+      "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "watt",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue", "value": null },
+              { "color": "green", "value": 1.5 },
+              { "color": "red", "value": 2.5 }
+            ]
+          },
+          "mappings": [],
+          "color": { "mode": "thresholds" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_INFLUXDB}",
+          "query": "from(bucket: \"my-bucket\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r[\"_measurement\"] == \"power_metrics\") |> filter(fn: (r) => r[\"source\"] == \"solar_panel\") |> filter(fn: (r) => r[\"_field\"] == \"power\") |> map(fn: (r) => ({ r with _value: r._value / 1000.0 })) |> last()",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 0 },
+      "type": "gauge",
+      "title": "배터리 충전/방전 상태",
+      "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "mA",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "orange", "value": null },
+              { "color": "blue", "value": 0 },
+              { "color": "green", "value": 200 }
+            ]
+          },
+          "mappings": [],
+          "color": { "mode": "thresholds" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_INFLUXDB}",
+          "query": "from(bucket: \"my-bucket\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r[\"_measurement\"] == \"power_metrics\") |> filter(fn: (r) => r[\"source\"] == \"battery\") |> filter(fn: (r) => r[\"_field\"] == \"current\") |> last()",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 0 },
+      "type": "gauge",
+      "title": "배터리 전압",
+      "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "volt",
+          "min": 3,
+          "max": 4.2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "orange", "value": 3.5 },
+              { "color": "green", "value": 3.8 }
+            ]
+          },
+          "mappings": [],
+          "color": { "mode": "thresholds" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_INFLUXDB}",
+          "query": "from(bucket: \"my-bucket\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r[\"_measurement\"] == \"power_metrics\") |> filter(fn: (r) => r[\"source\"] == \"battery\") |> filter(fn: (r) => r[\"_field\"] == \"voltage\") |> last()",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 0 },
+      "type": "stat",
+      "title": "총 발전량 (오늘)",
+      "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Wh",
+          "color": { "mode": "fixed" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
+        "graphMode": "area"
+      },
+      "targets": [
+        {
+          "datasource": "${DS_INFLUXDB}",
+          "query": "import \"timezone\"\noption location = timezone.location(name: \"Asia/Seoul\")\n\nfrom(bucket: \"my-bucket\")\n  |> range(start: today(), stop: now())\n  |> filter(fn: (r) => r[\"_measurement\"] == \"power_metrics\" and r[\"source\"] == \"solar_panel\" and r[\"_field\"] == \"power\")\n  |> map(fn: (r) => ({ r with _value: r._value / 1000.0 })) // mW to W\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> integral(unit: 1h) // W to Wh\n  |> last()",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 8 },
+      "type": "timeseries",
+      "title": "시간별 발전량 및 소비량",
+      "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "watt",
+          "color": { "mode": "palette-classic" },
+          "custom": { "fillOpacity": 20, "lineWidth": 2 }
+        },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        {
+          "alias": "발전량",
+          "datasource": "${DS_INFLUXDB}",
+          "query": "from(bucket: \"my-bucket\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r[\"_measurement\"] == \"power_metrics\") |> filter(fn: (r) => r[\"source\"] == \"solar_panel\") |> filter(fn: (r) => r[\"_field\"] == \"power\") |> map(fn: (r) => ({ r with _value: r._value / 1000.0 })) |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)",
+          "refId": "A"
+        },
+        {
+          "alias": "배터리 소비량",
+          "datasource": "${DS_INFLUXDB}",
+          "query": "from(bucket: \"my-bucket\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r[\"_measurement\"] == \"power_metrics\") |> filter(fn: (r) => r[\"source\"] == \"battery\") |> filter(fn: (r) => r[\"_field\"] == \"power\") |> map(fn: (r) => ({ r with _value: r._value / 1000.0 })) |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 17 },
+      "type": "timeseries",
+      "title": "트래커 각도",
+      "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": { "unit": "degree", "custom": { "fillOpacity": 0, "lineWidth": 2 } },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        {
+          "alias": "X축 (좌우)",
+          "datasource": "${DS_INFLUXDB}",
+          "query": "from(bucket: \"my-bucket\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r[\"_measurement\"] == \"system_status\") |> filter(fn: (r) => r[\"component\"] == \"tracker\") |> filter(fn: (r) => r[\"_field\"] == \"motor_x_angle\") |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)",
+          "refId": "A"
+        },
+        {
+          "alias": "Y축 (상하)",
+          "datasource": "${DS_INFLUXDB}",
+          "query": "from(bucket: \"my-bucket\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r[\"_measurement\"] == \"system_status\") |> filter(fn: (r) => r[\"component\"] == \"tracker\") |> filter(fn: (r) => r[\"_field\"] == \"motor_y_angle\") |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 17 },
+      "type": "timeseries",
+      "title": "포토다이오드 센서 값",
+      "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": { "unit": "", "custom": { "fillOpacity": 0, "lineWidth": 2 } },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        {
+          "alias": "{{. _field}}",
+          "datasource": "${DS_INFLUXDB}",
+          "query": "from(bucket: \"my-bucket\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r[\"_measurement\"] == \"system_status\") |> filter(fn: (r) => r[\"component\"] == \"light_sensors\") |> filter(fn: (r) => r[\"_field\"] == \"up\" or r[\"_field\"] == \"down\" or r[\"_field\"] == \"left\" or r[\"_field\"] == \"right\") |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 25 },
+      "type": "timeseries",
+      "title": "내/외부 온도",
+      "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": { "unit": "celsius", "custom": { "fillOpacity": 10, "lineWidth": 2 } },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        {
+          "alias": "외부 온도",
+          "datasource": "${DS_INFLUXDB}",
+          "query": "from(bucket: \"my-bucket\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r[\"_measurement\"] == \"system_status\") |> filter(fn: (r) => r[\"component\"] == \"environment\") |> filter(fn: (r) => r[\"_field\"] == \"temperature\") |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)",
+          "refId": "A"
+        },
+        {
+          "alias": "컨트롤러 온도",
+          "datasource": "${DS_INFLUXDB}",
+          "query": "from(bucket: \"my-bucket\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r[\"_measurement\"] == \"system_status\") |> filter(fn: (r) => r[\"component\"] == \"controller\") |> filter(fn: (r) => r[\"_field\"] == \"cpu_temp\") |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 25 },
+      "type": "timeseries",
+      "title": "외부 습도",
+      "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": { "unit": "percent", "custom": { "fillOpacity": 10, "lineWidth": 2 } },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        {
+          "alias": "습도",
+          "datasource": "${DS_INFLUXDB}",
+          "query": "from(bucket: \"my-bucket\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r[\"_measurement\"] == \"system_status\") |> filter(fn: (r) => r[\"component\"] == \"environment\") |> filter(fn: (r) => r[\"_field\"] == \"humidity\") |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 37,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "STGC - 실시간 모니터링 대시보드",
+  "uid": "stgc-dashboard",
+  "version": 1,
+  "weekStart": ""
+}

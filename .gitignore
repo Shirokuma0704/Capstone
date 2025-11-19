@@ -135,7 +135,7 @@ secrets.json
 
 # Large binary files
 *.bin
-*.dat
+
 *.elf
 
 # MCP Server
@@ -143,3 +143,4 @@ server.pid
 
 # personal
 personal
+/home/user/PycharmProjects/PythonProject/.env

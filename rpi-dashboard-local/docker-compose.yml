@@ -1,0 +1,51 @@
+services:
+  influxdb:
+    image: influxdb:2.7
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=my-user
+      - DOCKER_INFLUXDB_INIT_PASSWORD=my-password
+      - DOCKER_INFLUXDB_INIT_ORG=my-org
+      - DOCKER_INFLUXDB_INIT_BUCKET=my-bucket
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-token
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_SECURITY_COOKIE_SAMESITE=lax
+      - GF_SECURITY_COOKIE_SECURE=false
+      - GF_SECURITY_X_FRAME_OPTIONS=SAMEORIGIN
+      - GF_SECURITY_DISABLE_BRUTE_FORCE_LOGIN_PROTECTION=true
+    restart: unless-stopped
+
+  control-ui:
+    build: ./control_ui
+    container_name: control-ui
+    ports:
+      - "${CONTROL_UI_PORT:-8080}:8080"
+    environment:
+      - HARDWARE_API_URL=${HARDWARE_API_URL:-http://host.docker.internal:5000}
+      - GRAFANA_URL=http://grafana:3000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - grafana
+    restart: unless-stopped
+
+volumes:
+  influxdb_data:
+  grafana_data:

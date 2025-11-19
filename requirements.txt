@@ -2,7 +2,9 @@
 
 # GPIO and Hardware Control
 RPi.GPIO>=0.7.1
-lgpio>=0.2.0.0  # For Raspberry Pi 5
+# lgpio는 Pi 5 전용이지만 swig 등 빌드 의존성이 없으면 실패하므로 우선 제외
+# 필요 시 수동으로 설치 후 아래 라인을 복원하세요.
+# lgpio>=0.2.0.0  # For Raspberry Pi 5
 
 # Sensor Libraries
 adafruit-circuitpython-ina219>=3.4.0
@@ -12,6 +14,8 @@ smbus2>=0.4.2
 # GPS
 gpsd-py3>=0.3.0
 pyserial>=3.5
+pynmea2>=1.19.0
+pysolar>=0.10
 
 # SPI and I2C
 spidev>=3.6
@@ -19,10 +23,18 @@ spidev>=3.6
 # Web Server (MCP)
 Flask>=2.3.0
 Flask-CORS>=4.0.0
+fastapi>=0.110.0
+uvicorn[standard]>=0.23.0
+pydantic>=2.7.0
+httpx>=0.27.0
+requests>=2.31.0
 
 # Data Processing
 numpy>=1.24.0
 pandas>=2.0.0
+
+# DB client for data producer
+influxdb-client>=1.39.0
 
 # Utilities
 python-dateutil>=2.8.2

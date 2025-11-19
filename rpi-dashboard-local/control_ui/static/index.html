@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STGC - Solar Tracker Control</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1><i class="fas fa-sun"></i> STGC</h1>
+            <div class="status-indicator">
+                <span id="connection-status">연결 확인 중...</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left: Control Panels -->
+            <div class="control-section">
+                <!-- AI Chatbot -->
+                <div class="panel ai-chat-panel">
+                    <h2><i class="fas fa-robot"></i> AI 제어</h2>
+                    <div class="chat-container" id="chat-container">
+                        <div class="chat-message bot-message">
+                            안녕하세요! 태양광 트래커 제어를 도와드리겠습니다.
+                            <br>
+                            <small>예: "패널을 정남향으로", "x축 90도로 설정"</small>
+                        </div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input
+                            type="text"
+                            id="chat-input"
+                            placeholder="메시지를 입력하세요..."
+                            onkeypress="if(event.key==='Enter') sendMessage()"
+                        >
+                        <button onclick="sendMessage()" aria-label="전송"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+
+                <!-- Manual Control -->
+                <div class="panel manual-control-panel">
+                    <h2><i class="fas fa-sliders-h"></i> 수동 제어</h2>
+
+                    <!-- Sensor Display -->
+                    <div class="sensor-display">
+                        <div class="sensor-item">
+                            <span class="sensor-label"><i class="fas fa-arrows-alt-h"></i> X축 (좌우)</span>
+                            <span id="current-x-angle" class="sensor-value">--°</span>
+                        </div>
+                        <div class="sensor-item">
+                            <span class="sensor-label"><i class="fas fa-arrows-alt-v"></i> Y축 (상하)</span>
+                            <span id="current-y-angle" class="sensor-value">--°</span>
+                        </div>
+                        <div class="sensor-item">
+                            <span class="sensor-label"><i class="fas fa-thermometer-half"></i> 온도</span>
+                            <span id="current-temp" class="sensor-value">--°C</span>
+                        </div>
+                        <div class="sensor-item">
+                            <span class="sensor-label"><i class="fas fa-water"></i> 습도</span>
+                            <span id="current-humidity" class="sensor-value">--%</span>
+                        </div>
+                        <div class="sensor-item">
+                            <span class="sensor-label"><i class="fas fa-satellite"></i> 모드</span>
+                            <span id="current-mode" class="sensor-value">--</span>
+                        </div>
+                    </div>
+
+                    <!-- Motor Control Sliders -->
+                    <div class="control-group">
+                        <label for="x-slider">
+                            X축 각도 (좌우): <span id="x-value">90</span>°
+                        </label>
+                        <input
+                            type="range"
+                            id="x-slider"
+                            min="0"
+                            max="180"
+                            value="90"
+                            oninput="updateSliderValue('x')"
+                        >
+                    </div>
+
+                    <div class="control-group">
+                        <label for="y-slider">
+                            Y축 각도 (상하): <span id="y-value">90</span>°
+                        </label>
+                        <input
+                            type="range"
+                            id="y-slider"
+                            min="30"
+                            max="150"
+                            value="90"
+                            oninput="updateSliderValue('y')"
+                        >
+                    </div>
+
+                    <button class="control-button apply-button" onclick="applyMotorControl()">
+                        <i class="fas fa-check"></i> 적용
+                    </button>
+
+                    <!-- Preset Buttons -->
+                    <div class="preset-buttons">
+                        <h3><i class="fas fa-star"></i> 프리셋</h3>
+                        <div class="presets-grid">
+                            <button onclick="setPreset(90, 90)">중앙</button>
+                            <button onclick="setPreset(0, 60)">동쪽</button>
+                            <button onclick="setPreset(180, 60)">서쪽</button>
+                            <button onclick="setPreset(90, 30)">하늘</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Grafana Dashboard -->
+            <div class="dashboard-section">
+                <div class="panel grafana-panel">
+                    <h2><i class="fas fa-chart-line"></i> 실시간 모니터링</h2>
+                    <div class="grafana-container">
+                        <iframe
+                            id="grafana-iframe"
+                            src="http://100.116.239.122:3000/public-dashboards/cefd4fdec8e64f56a9575f7f2d9ab4aa"
+                            frameborder="0">
+                        </iframe>
+                        <div class="grafana-placeholder" id="grafana-placeholder">
+                            <div class="spinner"></div>
+                            <p>Grafana 대시보드 로딩 중...</p>
+                            <p class="hint">
+                                로딩이 길어지면 Grafana 서버 상태를 확인해주세요.
+                                <br>
+                                <a href="http://100.116.239.122:3000" target="_blank">Grafana로 이동</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
