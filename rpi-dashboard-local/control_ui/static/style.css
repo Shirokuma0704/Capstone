@@ -284,22 +284,39 @@ input[type="range"]::-moz-range-thumb {
     border: none;
 }
 
-.apply-button {
-    width: 100%;
+.manual-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.control-button {
+    flex-grow: 1;
     padding: 12px;
-    background: var(--accent-secondary);
-    color: var(--bg-color);
     border: none;
     border-radius: 8px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     transition: background 0.3s;
-    margin-bottom: 20px;
+}
+
+.apply-button {
+    background: var(--accent-secondary);
+    color: var(--bg-color);
 }
 
 .apply-button:hover {
     background: #00c37f;
+}
+
+.gps-button {
+    background: var(--accent-primary);
+    color: white;
+}
+
+.gps-button:hover {
+    background: #0095e0;
 }
 
 .preset-buttons h3 {

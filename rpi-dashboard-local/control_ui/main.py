@@ -59,6 +59,17 @@ async def control_motor(request: MotorControlRequest):
         raise HTTPException(status_code=500, detail=f"모터 제어 오류: {str(e)}")
 
 
+@app.post("/api/control/auto/resume")
+async def resume_auto_mode():
+    """트래커를 GPS 기반 자동 모드로 복귀시킵니다."""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(f"{HARDWARE_API_URL}/api/v1/control/auto/resume")
+            return response.json()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"자동 모드 복귀 오류: {str(e)}")
+
+
 # AI 챗봇 엔드포인트 (MCP 서버 프록시)
 @app.post("/api/chat")
 async def chat(request: ChatRequest):
@@ -74,20 +85,16 @@ async def chat(request: ChatRequest):
             response.raise_for_status()
             mcp_result = response.json()
 
-            # mcp_server 응답을 UI가 이해하는 형식으로 변환
-            interpreted_action = mcp_result.get("interpreted_action", {})
-            action_type = interpreted_action.get("action")
-            result_data = mcp_result.get("result", {})
+            # mcp_server 현재 스키마: {result: "success"|"error", response: "텍스트", action: "..."}
+            status = mcp_result.get("result")
+            ai_response = mcp_result.get("response", "")
 
-            # 사용자에게 보여줄 응답 메시지 생성
-            if action_type == "error":
-                final_response = f"명령을 이해하지 못했습니다: {result_data.get('message', '알 수 없는 오류')}"
-            elif result_data.get('status') == 'error':
-                 final_response = f"명령 실행 중 오류가 발생했습니다: {result_data.get('message', '알 수 없는 오류')}"
+            if status != "success":
+                error_message = mcp_result.get("message") or ai_response or "알 수 없는 오류"
+                final_response = f"명령 실행 중 오류가 발생했습니다: {error_message}"
             else:
-                final_response = f"명령({request.message})이 해석되어 실행되었습니다.\n"
-                final_response += f" - 해석된 동작: {action_type}\n"
-                final_response += f" - 실행 결과: {json.dumps(result_data, ensure_ascii=False, indent=2)}"
+                # 성공 시 Gemini에서 생성한 응답을 그대로 노출
+                final_response = ai_response or "응답이 비어 있습니다."
 
             return {
                 "response": final_response,
@@ -109,4 +116,3 @@ async def health_check():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8080)
-

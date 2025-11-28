@@ -111,6 +111,27 @@ async function applyMotorControl() {
     }
 }
 
+// GPS 자동 모드로 복귀
+async function resumeAutoMode() {
+    try {
+        const response = await fetch('/api/control/auto/resume', {
+            method: 'POST',
+        });
+
+        if (!response.ok) throw new Error('GPS 자동 모드 복귀 실패');
+
+        const data = await response.json();
+        addChatMessage('🛰️ GPS 자동 추적 모드로 복귀합니다.', 'bot');
+
+        // 센서 데이터 즉시 업데이트
+        setTimeout(updateSensorData, 500);
+
+    } catch (error) {
+        console.error('GPS 모드 복귀 오류:', error);
+        addChatMessage(`⚠️ 오류: ${error.message}`, 'bot');
+    }
+}
+
 // 프리셋 설정
 function setPreset(xAngle, yAngle) {
     document.getElementById('x-slider').value = xAngle;

@@ -25,14 +25,14 @@ SERVO_ALTITUDE_PIN = 12  # MG995 - 고도각 (수직 회전)
 PWM_FREQUENCY = 50
 
 # 업데이트 주기 (초)
-UPDATE_INTERVAL = 60  # 1분마다 태양 위치 업데이트
+UPDATE_INTERVAL = 10  # 1분마다 태양 위치 업데이트
 
 # 서보모터 각도 보정값
 AZIMUTH_OFFSET = 90  # 방위각 오프셋 (0도가 정북일 때)
 ALTITUDE_OFFSET = 0  # 고도각 오프셋
 
 # GPS Fix 최대 대기 시간
-GPS_FIX_TIMEOUT = 60  # 60초
+GPS_FIX_TIMEOUT = 10  # 60초
 
 
 # ============================================================
@@ -89,7 +89,7 @@ def sync_time_with_ntp():
         print("NTP 서버와 시간 동기화 중...")
         response = ntp_client.request('pool.ntp.org', version=3, timeout=5)
 
-        ntp_time = datetime.utcfromtimestamp(response.tx_time)
+        ntp_time = datetime(response.tx_time)
         print(f"✓ NTP 시간: {ntp_time.strftime('%Y-%m-%d %H:%M:%S UTC')}")
         print(f"  (오프셋: {response.offset * 1000:.2f}ms)")
 

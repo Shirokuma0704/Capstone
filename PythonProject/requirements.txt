@@ -1,6 +1,6 @@
 flask
 influxdb-client
-google-generativeai
+google-genai
 python-dotenv
 requests
 adafruit-blinka

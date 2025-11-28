@@ -22,6 +22,10 @@ class SensorReader:
         self._ina = None
         self._dht = None
 
+        # Cache for last known good values
+        self._last_ina_data = {"voltage": None, "current": None, "power": None}
+        self._last_dht_data = {"temperature": None, "humidity": None}
+
         if not self.mock_mode:
             self._setup_hardware()
 
@@ -64,6 +68,10 @@ class SensorReader:
                 i2c = busio.I2C(board.SCL, board.SDA)
 
             self._ina = INA219(i2c)
+            # This is a critical step for current measurement.
+            # The INA219 needs to be calibrated based on the shunt resistor
+            # and the expected current range. Using a common default.
+            self._ina.set_calibration_32V_2A()
         except Exception as exc:  # pragma: no cover - hardware dependent
             print(f"INA219 unavailable: {exc}")
             self._ina = None
@@ -134,14 +142,15 @@ class SensorReader:
             return {"voltage": voltage, "current": current, "power": power}
 
         if not self._ina:
-            return {"voltage": None, "current": None, "power": None}
+            return self._last_ina_data
         try:
             voltage = float(self._ina.bus_voltage)
             current = float(self._ina.current) / 1000.0  # mA -> A
             power = voltage * current
-            return {"voltage": voltage, "current": current, "power": power}
+            self._last_ina_data = {"voltage": voltage, "current": current, "power": power}
+            return self._last_ina_data
         except Exception:
-            return {"voltage": None, "current": None, "power": None}
+            return self._last_ina_data
 
     def _read_dht(self) -> Dict[str, Optional[float]]:
         if self.mock_mode:
@@ -150,14 +159,15 @@ class SensorReader:
                 "humidity": round(50.0 + random.uniform(-5, 5), 1),
             }
         if not self._dht:
-            return {"temperature": None, "humidity": None}
+            return self._last_dht_data
         try:
-            return {
+            self._last_dht_data = {
                 "temperature": float(self._dht.temperature),
                 "humidity": float(self._dht.humidity),
             }
+            return self._last_dht_data
         except Exception:
-            return {"temperature": None, "humidity": None}
+            return self._last_dht_data
 
     # --- Public API ---
     def read_all(self) -> Dict[str, Any]:
